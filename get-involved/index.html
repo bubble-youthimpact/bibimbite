@@ -34,15 +34,17 @@
   <p class="m-foot">BibimBite — Nourishing Communities, One Bowl at a Time</p>
 </div><main id="main">
 <section class="page-hero"><div class="container"><h1>Get Involved</h1><p>Donate, partner with us, and help put a healthy meal in every hand.</p></div></section>
-<section class="section"><div class="container split">
+<section class="section" id="donate"><div class="container split">
   <img class="media" src="../assets/img/donate.webp" alt="Hands passing a takeaway meal box" style="aspect-ratio:3/2" loading="lazy" decoding="async">
   <div>
     <span class="pill">Donate</span>
     <h2 class="h2">Make a Donation</h2>
     <p>Every bowl of bibimbap you help fund brings more than just a meal. It brings hope, health, and connection.</p>
     <p>Every contribution, big or small, helps us build a world where no one is left hungry and everyone can share a meal filled with nutrition and care.</p>
-    <form class="form-stack" data-form data-mode-submit="ajax" data-success="Thank you for your generosity! We'll email you shortly with how to complete your donation." novalidate>
+    <form class="form-stack" data-form data-key="donate" data-mode-submit="native" action="https://formsubmit.co/bubble.youthimpact@gmail.com" method="POST" data-success="Thank you for your generosity! We'll email you shortly with how to complete your donation." novalidate>
       <input type="hidden" name="_subject" value="New donation pledge">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="">
       <input type="hidden" name="_template" value="table">
       <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <label class="sr-only" for="d-name">Full Name</label><input class="input" id="d-name" name="name" placeholder="Full Name" autocomplete="name" required>
@@ -60,8 +62,10 @@
     <span class="pill">Join us</span>
     <h2 class="h2">Become a partner</h2>
     <p>Together, we can make nutritious food accessible to everyone. Let's work together to bring healthy, affordable meals, and a sense of belonging, to every person.</p>
-    <form class="form-stack" data-form data-mode-submit="ajax" data-success="Thanks for reaching out! We'll contact you soon about partnering." novalidate>
+    <form class="form-stack" data-form data-key="partner" data-mode-submit="native" action="https://formsubmit.co/bubble.youthimpact@gmail.com" method="POST" data-success="Thanks for reaching out! We'll contact you soon about partnering." novalidate>
       <input type="hidden" name="_subject" value="New partnership request">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="">
       <input type="hidden" name="_template" value="table">
       <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <label class="sr-only" for="p-name">Name</label><input class="input" id="p-name" name="name" placeholder="Name" autocomplete="name" required>

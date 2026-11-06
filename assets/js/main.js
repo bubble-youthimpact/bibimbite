@@ -1,7 +1,5 @@
 (function () {
   "use strict";
-  var FORM_EMAIL = "bubble.youthimpact@gmail.com";
-  var AJAX_URL = "https://formsubmit.co/ajax/" + FORM_EMAIL;
   var body = document.body;
   var root = document.documentElement;
   var header = document.querySelector(".site-header");
@@ -245,12 +243,11 @@
     ["dragleave", "drop"].forEach(function (ev) { u.addEventListener(ev, function () { u.classList.remove("drag"); }); });
   });
 
-  /* ---------- Forms → FormSubmit ---------- */
+  /* ---------- Forms → FormSubmit (regular form POST: no CORS, works with ad blockers) ---------- */
   function say(msg, text, isError) { msg.textContent = text; msg.className = "form-msg show" + (isError ? " error" : ""); }
   document.querySelectorAll("form[data-form]").forEach(function (form) {
     var msg = form.querySelector(".form-msg");
     var btn = form.querySelector("button[type=submit]");
-    var btnText = btn.textContent;
     form.addEventListener("input", function (e) { if (e.target.classList) e.target.classList.remove("invalid"); });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -271,30 +268,37 @@
         return;
       }
 
-      if (form.getAttribute("data-mode-submit") === "native") {
-        // Native multipart POST so the resume file is attached; FormSubmit redirects to the thank-you page.
-        form.querySelector('[name="_next"]').value = new URL(form.getAttribute("data-next"), location.href).href;
-        btn.disabled = true; btn.textContent = "Sending…";
-        HTMLFormElement.prototype.submit.call(form);
-        return;
+      // Where FormSubmit sends the visitor afterwards (must be a web address, so skip it for local files).
+      var next = form.querySelector('[name="_next"]');
+      if (next && /^https?:$/.test(location.protocol)) {
+        if (form.getAttribute("data-next")) {
+          next.value = new URL(form.getAttribute("data-next"), location.href).href;
+        } else {
+          var u = new URL(location.href);
+          u.search = "?sent=" + form.getAttribute("data-key");
+          u.hash = form.getAttribute("data-key");
+          next.value = u.href;
+        }
+      } else if (next) {
+        next.parentNode.removeChild(next);
       }
-
-      var data = {};
-      new FormData(form).forEach(function (v, k) { data[k] = v; });
       btn.disabled = true; btn.textContent = "Sending…";
-      fetch(AJAX_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(data)
-      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
-        .then(function (res) {
-          if (res.ok && String(res.j.success) !== "false") { say(msg, form.getAttribute("data-success")); form.reset(); }
-          else { say(msg, (res.j && res.j.message) || "Something went wrong. Please try again.", true); }
-        })
-        .catch(function () { say(msg, "We couldn't send your message. Please check your connection and try again.", true); })
-        .then(function () { btn.disabled = false; btn.textContent = btnText; });
+      HTMLFormElement.prototype.submit.call(form);
     });
   });
+
+  // Back from FormSubmit: show the success message on the form that was sent.
+  (function () {
+    var m = /[?&]sent=([\w-]+)/.exec(location.search);
+    if (!m) return;
+    var form = document.querySelector('form[data-key="' + m[1] + '"]');
+    if (form) {
+      var msg = form.querySelector(".form-msg");
+      say(msg, form.getAttribute("data-success"));
+      setTimeout(function () { msg.scrollIntoView({ block: "center" }); }, 50);
+    }
+    try { history.replaceState(null, "", location.pathname + location.hash); } catch (err) { /* ignore */ }
+  })();
 
   document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
 })();
